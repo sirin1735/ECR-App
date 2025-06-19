@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Products</h2>
+
+<!-- 🔍 Search + Filter -->
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="search" value="{{ request.args.get('search', '') }}" class="form-control" placeholder="Search by name...">
+    </div>
+    <div class="col-md-4">
+        <select name="company" class="form-select" onchange="this.form.submit()">
+            <option value="">Filter by Company</option>
+            {% for c in companies %}
+                <option value="{{ c }}" {% if selected_company == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-outline-secondary w-100">Apply</button>
+    </div>
+</form>
+
+<!-- 🧾 Product Cards -->
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <img src="{{ url_for('static', filename=product.image_url or 'images/placeholder.jpg') }}"
+     class="card-img-top"
+     height="180"
+     onerror="this.src='https://via.placeholder.com/300x200';">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">
+                    <strong>Company:</strong> {{ product.company }}<br>
+                    <strong>Sale Price:</strong> ₹{{ product.price }}<br>
+                    {% if session.role == 'distributor' %}
+                        <strong>Purchase Price:</strong> ₹{{ product.purchase_price }}<br>
+                    {% endif %}
+                </p>
+
+                <!-- 👥 Customer Order Button -->
+                {% if session.role == 'customer' %}
+                    <form method="post" action="/order/{{ product.id }}">
+                        <input type="number" name="quantity" value="1" min="1" class="form-control mb-2">
+                        <button type="submit" class="btn btn-primary w-100">Order Now</button>
+                    </form>
+                {% endif %}
+
+                <!-- 🛠 Distributor Actions -->
+                {% if session.role == 'distributor' %}
+                    <div class="d-flex justify-content-between mt-2">
+                        <a href="/edit_product/{{ product.id }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <a href="/delete_product/{{ product.id }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this product?')">Delete</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not products %}
+<div class="alert alert-warning">No products found.</div>
+{% endif %}
+
+{% endblock %}

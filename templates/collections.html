@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Collections</h2>
+
+<!-- Success flash message -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-success">{{ messages[0] }}</div>
+  {% endif %}
+{% endwith %}
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Customer</th>
+            <th>Due</th>
+            <th>Collect</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in customers %}
+        <tr>
+            <td>{{ c.username }}</td>
+            <td>₹{{ c.amount }}</td>
+            <td>
+                <form method="post" class="d-flex gap-2 align-items-center">
+                    <input type="hidden" name="user_id" value="{{ c.id }}">
+                    <input type="number" step="0.01" name="amount" placeholder="₹" required class="form-control w-50">
+                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Confirm collection?')">Submit</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

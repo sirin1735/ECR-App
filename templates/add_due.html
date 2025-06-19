@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Add / Update Due</h2>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-success">{{ messages[0] }}</div>
+  {% endif %}
+{% endwith %}
+
+<form method="post" class="border p-4 bg-light rounded shadow-sm">
+    <div class="mb-3">
+        <label>Select Customer</label>
+        <select name="user_id" class="form-select" required>
+            {% for c in customers %}
+                <option value="{{ c.id }}">{{ c.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Due Amount</label>
+        <input type="number" name="amount" step="0.01" required class="form-control">
+    </div>
+
+    <div class="d-grid">
+        <button type="submit" class="btn btn-success">Add Due</button>
+    </div>
+</form>
+{% endblock %}
